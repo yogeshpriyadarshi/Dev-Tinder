@@ -1,20 +1,26 @@
 const express = require("express");
 const {connectDB} = require("./config/database");
+const User = require("./models/user")
 
 const app = express();
+
+app.use(express.json());
 const {authuser} = require("./middleware/auth");
 
-app.use( "/user", authuser,
- (req,res)=>{
- console.log(" second router handler")
-     res.send("action two  is done!");
+app.post( "/sinup", async(req,res)=>{
+
+    console.log("done this data",req.body);
+
+    try{
+const user = new User(req.body);
+await user.save();
+     res.send("action one  is done!");
+    }catch(err){
+console.log("error");
+    }
+    
 } 
-
-
 );
-
-
-// app.use( "router name", ()=>{},  ()=>{}, ()=>{}       )
 
 
 
