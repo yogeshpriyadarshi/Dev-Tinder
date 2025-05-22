@@ -5,15 +5,14 @@ const User = require("./models/user")
 const app = express();
 
 app.use(express.json());
-const {authuser} = require("./middleware/auth");
 
 app.post( "/sinup", async(req,res)=>{
     try{
 const user = new User(req.body);
 await user.save();
-     res.send("action one  is done!");
+     res.send("user data is successfully uploaded!");
     }catch(err){
-console.log("error");
+        res.status(400).send("Something went wrong!");
     }
 } 
 );
@@ -30,6 +29,29 @@ res.send(user);
 }catch(err){
 res.status(400).send("something went wrong!");
 }
+})
+
+app.patch("/user/:id",async(req,res)=>{
+
+    console.log("first",req.body);
+    const updateid = req.params.id;
+    console.log("first,",updateid);
+    const data = req.body;
+
+    try{
+        const ALLOWED_UPDATE = ["skills","age","photural","gender"];
+
+        const isUpdateAllowed = Object.keys(data).every( (k)=> ALLOWED_UPDATE.includes(k))
+        if(!isUpdateAllowed){
+            res.send("not update allowed");
+        }
+
+
+        const up = await User.findByIdAndUpdate( updateid, data, { returnDocument:'after', runValidators:true});       
+        res.send(up);
+    }catch(err){
+        res.status(400).send("something went wrong",err.message);
+    }
 })
 
 app.get("/feed", async(req,res)=>{
