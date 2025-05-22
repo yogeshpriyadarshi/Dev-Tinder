@@ -1,13 +1,17 @@
 const express = require("express");
 const {connectDB} = require("./config/database");
 const User = require("./models/user")
+const {validateSinupUpDate} = require("./utils/validation");
 
 const app = express();
 
 app.use(express.json());
 
 app.post( "/sinup", async(req,res)=>{
+    console.log(req.body);
     try{
+validateSinupUpDate(req);
+
 const user = new User(req.body);
 await user.save();
      res.send("user data is successfully uploaded!");
