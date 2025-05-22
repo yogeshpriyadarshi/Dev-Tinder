@@ -12,7 +12,7 @@ const user = new User(req.body);
 await user.save();
      res.send("user data is successfully uploaded!");
     }catch(err){
-        res.status(400).send("Something went wrong!");
+        res.status(400).send(err.message);
     }
 } 
 );
