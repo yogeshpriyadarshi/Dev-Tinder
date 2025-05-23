@@ -2,6 +2,7 @@ const express = require("express");
 const {connectDB} = require("./config/database");
 const User = require("./models/user")
 const {validateSinupUpDate} = require("./utils/validation");
+const bcrypt = require("bcrypt");
 
 const app = express();
 
@@ -12,7 +13,16 @@ app.post( "/sinup", async(req,res)=>{
     try{
 validateSinupUpDate(req);
 
-const user = new User(req.body);
+const {firstName, lastName, email, password} = req.body;
+
+const passwordhash = await bcrypt.hash(password,10);
+
+const user = new User({
+firstName,
+lastName,
+email,
+password:passwordhash
+});
 await user.save();
      res.send("user data is successfully uploaded!");
     }catch(err){
@@ -20,6 +30,26 @@ await user.save();
     }
 } 
 );
+
+app.post("/login", async(req,res)=> {
+    try{
+        const { email, password } = req.body;
+
+        const user = await User.findOne({email:email});
+        if(user===0){
+            throw new Error("not valid crediential!");
+        }
+        const isCorrectPassword = await bcrypt.compare(password,user.password);
+
+        if(isCorrectPassword){
+            res.send( user.firstName  + " successfully login")
+        }else{
+            throw new Error("not valid credential!");
+        }
+    }catch{
+        res.status(400).send("invalid credential!");
+    }
+})
 
 app.get("/user", async(req,res)=>{
 const userName = req.body.firstName;
