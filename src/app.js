@@ -5,6 +5,7 @@ const { validateSinupUpDate } = require("./utils/validation");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const cookieParser = require("cookie-parser");
+const {authuser} = require("./middleware/auth");
 
 const app = express();
 
@@ -56,16 +57,12 @@ app.post("/login", async (req, res) => {
   }
 });
 
-app.get("/profile", async (req, res) => {
-  const cookies = req.cookies;
-  const { token } = cookies;
-  // varify the token;
-  const decodedMessage = await jwt.verify(token, "something");
-  const {_id} = decodedMessage;
-  res.send("Reading token!");
+app.get("/profile", authuser,async (req, res) => {
+ const profile = req.user;
+  res.send(profile);
 });
 
-app.get("/user", async (req, res) => {
+app.get("/user", async (req, res) => { 
   const userName = req.body.firstName;
   try {
     const user = await User.find({ firstName: userName });
