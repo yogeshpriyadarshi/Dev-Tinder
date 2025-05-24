@@ -1,6 +1,5 @@
 const jwt = require("jsonwebtoken");
 const User = require("../models/user");
-const cookieParser = require("cookie-parser");
 
 
 const authuser = async(req, res,next)=>{
