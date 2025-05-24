@@ -45,9 +45,10 @@ skills:{
 photoUrl:{
     type:String,
     default:"Ram"
-}
-
-})
+} },
+{
+    timestamps: true,
+});
 
 const user = mongoose.model("user", userSchema)
 

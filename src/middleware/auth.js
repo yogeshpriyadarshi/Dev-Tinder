@@ -17,4 +17,4 @@ next();
     }  
 }
 
-module.exports= authuser;
+module.exports= {authuser};
