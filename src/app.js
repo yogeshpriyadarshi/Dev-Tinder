@@ -8,13 +8,14 @@ const app = express();
 app.use(express.json());
 app.use(cookieParser());
 
-const authRouter = require('./routes/auth');
-const userRouter = require('./routes/user');
+ const authRouter = require('./routes/auth');
+ const userRouter = require('./routes/user');
 
-console.log(authRouter,userRouter);
+ console.log("My autherRouter: ",typeof authRouter);
+ console.log("My userRouter: ",typeof userRouter);
 
- app.use("/",authRouter);
- app.use("/",userRouter);
+  app.use("/",authRouter);
+  app.use("/",userRouter);
 
 connectDB()
   .then(() => {

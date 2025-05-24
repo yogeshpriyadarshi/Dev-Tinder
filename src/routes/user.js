@@ -51,13 +51,6 @@ userRouter.get("/feed",authuser, async (req, res) => {
   res.send(user);
 });
 
-userRouter.delete("/delete",authuser, async (req, res) => {
-  try {
-    const del = await User.deleteOne({ _id: req.body.id });
-    res.send(del);
-  } catch (err) {
-    res.status(400).send("something went wrong!");
-  }
-});
+
 
 module.exports = userRouter;
