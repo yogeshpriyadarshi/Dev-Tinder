@@ -2,16 +2,14 @@ const express = require("express");
 const {authuser} = require("../middleware/auth");
 const User = require ("../models/user");
 
-const userRouter = express.Router();
+const profileRouter = express.Router();
 
-userRouter.get("/profile/view", authuser, async (req, res) => {
+profileRouter.get("/profile/view", authuser, async (req, res) => {
  const profile = req.user;
   res.send(profile);
 });
 
-
-
-userRouter.patch("/profile/edit",authuser ,async (req, res) => {
+profileRouter.patch("/profile/edit",authuser ,async (req, res) => {
   try {
     const ALLOWED_UPDATE = ["firstName","lastName","skills", "age", "photural", "gender"];
 
@@ -28,11 +26,11 @@ userRouter.patch("/profile/edit",authuser ,async (req, res) => {
   }
 });
 
-userRouter.get("/feed",authuser, async (req, res) => {
+profileRouter.get("/feed",authuser, async (req, res) => {
   const user = await User.find({});
   res.send(user);
 });
 
 
 
-module.exports = userRouter;
+module.exports = profileRouter;

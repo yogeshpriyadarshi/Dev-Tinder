@@ -32,12 +32,13 @@ age:{
 },
 gender:{
     type:String,
-    validate(value){
-        if(!["male","female","others"].includes(value)){
-            console.log("done");
-        throw new Error("gender data is not valid!");
-        }
-    }
+    enum: { values :["male","female","others"]}
+    // validate(value){
+    //     if(!["male","female","others"].includes(value)){
+    //         console.log("done");
+    //     throw new Error("gender data is not valid!");
+    //     }
+    // }
 },
 skills:{
     type:[String]
@@ -50,6 +51,6 @@ photoUrl:{
     timestamps: true,
 });
 
-const user = mongoose.model("user", userSchema)
+const User = mongoose.model("user", userSchema)
 
-module.exports = user;
+module.exports = User;
