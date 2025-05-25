@@ -5,7 +5,6 @@ const User = require("../models/user");
 const authuser = async(req, res,next)=>{
     try{
 const cookie = req.cookies;
-console.log(cookie)
 const {token} = cookie;
 decodedObj = await jwt.verify(token,"something");
 const {_id} = decodedObj;

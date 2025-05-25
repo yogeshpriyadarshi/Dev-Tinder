@@ -26,7 +26,7 @@ authRouter.post("/sinup", async (req, res) => {
 authRouter.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
-
+console.log("email:",email);
     const user = await User.findOne({ email: email });
     if (user === 0) {
       throw new Error("not valid crediential!");
@@ -45,6 +45,11 @@ authRouter.post("/login", async (req, res) => {
     res.status(400).send(err.message);
   }
 });
+
+authRouter.post("/logout",async(req,res)=>{
+res.cookie("token",null, {expires: new Date( Date.now())} );
+res.send("logout successfully!");
+})
 
 
 module.exports = authRouter;

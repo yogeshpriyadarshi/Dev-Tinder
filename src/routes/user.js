@@ -4,45 +4,27 @@ const User = require ("../models/user");
 
 const userRouter = express.Router();
 
-userRouter.get("/profile", authuser, async (req, res) => {
+userRouter.get("/profile/view", authuser, async (req, res) => {
  const profile = req.user;
   res.send(profile);
 });
 
-userRouter.get("/user",authuser, async (req, res) => { 
-  const userName = req.body.firstName;
-  try {
-    const user = await User.find({ firstName: userName });
-    if (user.length === 0) {
-      res.status(404).send("user is not found!");
-    } else {
-      res.send(user);
-    }
-  } catch (err) {
-    res.status(400).send(err.message);
-  }
-});
 
-userRouter.patch("/user/:id",authuser ,async (req, res) => {
-  const updateid = req.params.id;
-  const data = req.body;
-  try {
-    const ALLOWED_UPDATE = ["skills", "age", "photural", "gender"];
 
-    const isUpdateAllowed = Object.keys(data).every((k) =>
-      ALLOWED_UPDATE.includes(k)
-    );
+userRouter.patch("/profile/edit",authuser ,async (req, res) => {
+  try {
+    const ALLOWED_UPDATE = ["firstName","lastName","skills", "age", "photural", "gender"];
+
+    const isUpdateAllowed = Object.keys(req.body).every(field => ALLOWED_UPDATE.includes(field) );
     if (!isUpdateAllowed) {
-      res.send("not update allowed");
+      throw new Error("Update request is not valid!!");
     }
-
-    const up = await User.findByIdAndUpdate(updateid, data, {
-      returnDocument: "after",
-      runValidators: true,
+    const upDate = await User.findByIdAndUpdate(req.user._id, req.body, {
+      returnDocument: "after", runValidators: true,
     });
-    res.send(up);
+    res.send(upDate);
   } catch (err) {
-    res.status(400).send("something went wrong", err.message);
+    res.status(400).send("ERROR:", err.message);
   }
 });
 
