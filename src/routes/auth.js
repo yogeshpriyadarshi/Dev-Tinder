@@ -27,6 +27,8 @@ authRouter.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
 console.log("email:",email);
+console.log("pass:",password);
+
     const user = await User.findOne({ email: email });
     if (user === 0) {
       throw new Error("not valid crediential!");
@@ -37,12 +39,12 @@ console.log("email:",email);
       //             genrerate the token here!
       const token = await jwt.sign({ _id: user.id }, "something");
       res.cookie("token", token);
-      res.send(user.firstName + " successfully login");
+      res.send(user);
     } else {
       throw new Error("not valid credential!");
     }
   } catch (err) {
-    res.status(400).send(err.message);
+    res.status(400).send("Error"+err.message);
   }
 });
 
