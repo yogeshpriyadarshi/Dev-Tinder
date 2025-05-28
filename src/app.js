@@ -2,12 +2,11 @@ const express = require("express");
 const { connectDB } = require("./config/database");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
-
+const BASE_URL = require('./utils/constant');
 
 const app = express();
 
-
-app.use(cors({origin:"http://localhost:5173", credentials:true}));
+app.use(cors({origin:BASE_URL, credentials:true}));
 app.use(express.json());
 app.use(cookieParser());
 
