@@ -6,13 +6,16 @@ const authuser = async(req, res,next)=>{
     try{
 const cookie = req.cookies;
 const {token} = cookie;
+if(!token){
+    return res.status(401).send("please Login!");
+}
 decodedObj = await jwt.verify(token,"something");
 const {_id} = decodedObj;
 const user = await User.findById(_id);
 req.user=user;
 next();
     }catch(err){
-        res.status(400).send("Error:"+ err.message);
+        res.status(401).send("Error:"+ err.message);
     }  
 }
 

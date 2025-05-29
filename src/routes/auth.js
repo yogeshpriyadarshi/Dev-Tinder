@@ -26,12 +26,9 @@ authRouter.post("/sinup", async (req, res) => {
 authRouter.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
-console.log("email:",email);
-console.log("pass:",password);
-
     const user = await User.findOne({ email: email });
     if (user === 0) {
-      throw new Error("not valid crediential!");
+      throw new Error(" not valid crediential!");
     }
     const isCorrectPassword = await bcrypt.compare(password, user.password);
 
@@ -41,10 +38,10 @@ console.log("pass:",password);
       res.cookie("token", token);
       res.send(user);
     } else {
-      throw new Error("not valid credential!");
+      throw new Error(" not valid credential!");
     }
   } catch (err) {
-    res.status(400).send("Error"+err.message);
+    res.status(400).send("Error: "+err.message);
   }
 });
 

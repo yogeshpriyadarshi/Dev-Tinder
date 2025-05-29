@@ -1,6 +1,8 @@
 const express = require("express");
 const {authuser} = require("../middleware/auth");
 const User = require ("../models/user");
+const { connection } = require("mongoose");
+const ConnectionModel = require("../models/connection");
 
 const profileRouter = express.Router();
 
@@ -27,8 +29,15 @@ profileRouter.patch("/profile/edit",authuser ,async (req, res) => {
 });
 
 profileRouter.get("/feed",authuser, async (req, res) => {
-  const user = await User.find({});
-  res.send(user);
+  const loggedUser = req.user;
+ const connectedUser = await ConnectionModel.find({
+    $or: [ {fromUserId:loggedUser}, {toUserId: loggedUser}  ]
+  })
+console.log("connectedUser:", co)
+  res.send("done!");
+  // const user = await User.find({});
+  // res.send(user);
+
 });
 
 
