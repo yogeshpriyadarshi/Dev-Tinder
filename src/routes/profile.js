@@ -12,7 +12,6 @@ profileRouter.get("/profile/view", authuser, async (req, res) => {
 
 profileRouter.patch("/profile/edit/:id",authuser ,async (req, res) => {
   try {
-    console.log("edit")
     const ALLOWED_UPDATE = ["firstName","lastName","skill", "age", "photoUrl", "gender","about"];
 
     const isUpdateAllowed = Object.keys(req.body).every(field => ALLOWED_UPDATE.includes(field) );

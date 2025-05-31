@@ -5,6 +5,14 @@ const User = require("../models/user");
 const ConnectionModel = require("../models/connection");
 
 const requestRouter = express.Router();
+const SAFE_DATA = [
+  "firstName",
+  "lastName",
+  "age",
+  "about",
+  "gender",
+  "photoUrl",
+];
 
 requestRouter.post(
   "/request/sent/:status/:toRequestId",
@@ -18,8 +26,6 @@ requestRouter.post(
       if (!AllowedStatus.includes(status)) {
         throw new Error("Status is not defined!");
       }
-      console.log("userid is ", toRequestId);
-
       const user = await User.findById(toUserId);
       if (!user) {
         throw new Error("request Id is not present!");
@@ -40,51 +46,50 @@ requestRouter.post(
         status,
       });
       connection.save();
+      res.json({ success: true });
     } catch (err) {
       res.send("ERROR:" + err.message);
     }
   }
 );
 
-requestRouter.post(
+requestRouter.patch(
   "/request/review/:status/:requestId",
   authuser,
   async (req, res) => {
     try {
+      const loggedUser = req.user;
       const { status, requestId } = req.params;
-      const toUserId = requestId;
-      const fromUserId = req.user._id;
-
-      const AllowedStatus = ["accepted", "rejected"];
-
+      const fromUserId = requestId;
+      const toUserId = loggedUser._id;
+      const AllowedStatus = ["accepted", "declined"];
       if (!AllowedStatus.includes(status)) {
         throw new Error("Status is not defined!");
       }
-
-      console.log("userid is ", requestId);
-
-      const user = await User.findById(requestId);
-      if (!user) {
-        throw new Error("request Id is not present!");
-      }
-
-      // check connection is already exist and it's status is interested!
+      console.log("first,", status);
 
       const connectionExist = await ConnectionModel.findOne({
-        fromUserId: requestId,
-        toUserId: req.user._id,
-        status: "interested",
+        $or: [
+          {
+            fromUserId,
+            toUserId,
+            status: "interested",
+          },
+          {
+            fromUserId: toUserId,
+            toUserId: fromUserId,
+            status: "interested",
+          },
+        ],
       });
-      if (!connectionExist) {
-        throw new Error("connetion is not  exist");
-      }
-
-      const connection = new ConnectionModel({
-        fromUserId,
-        toUserId,
-        status,
-      });
-      connection.save();
+      console.log(req.body);
+      console.log("first", connectionExist?._id);
+      const updateRequest = await ConnectionModel.findByIdAndUpdate(
+        connectionExist?._id,
+        req.body,
+        { returnDocument: "after", runValidators: true }
+      );
+      res.json({ success: true });
     } catch (err) {
       res.send("ERROR:" + err.message);
     }
@@ -92,9 +97,16 @@ requestRouter.post(
 );
 
 requestRouter.get("/request/view/", authuser, async (req, res) => {
-  const logedInUser = req.user;
-  const requestUser = await ConnectionModel.find({ toUserId: logedInUser._id });
-  res.send(requestUser);
+  try {
+    const loggedInUser = req.user;
+    const requestUser = await ConnectionModel.find({
+      toUserId: loggedInUser._id,
+      status: "interested",
+    }).populate("fromUserId", SAFE_DATA);
+    res.send(requestUser);
+  } catch (err) {
+    res.status(400).send("ERROR:" + err.message);
+  }
 });
 
 module.exports = requestRouter;
