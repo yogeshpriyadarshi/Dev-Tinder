@@ -1,11 +1,29 @@
-import React from 'react'
+const express = require("express");
+const { authuser } = require("../middleware/auth");
+const ConnectionModel = require("../models/connection");
 
-export default function connection() {
-  return (
-    <div>
+const connectionRouter = express.Router();
+
+    const SAFE_DATA = [
+  "firstName",
+  "lastName",
+  "age",
+  "about",
+  "gender",
+  "photoUrl",
+];
+
+connectionRouter.get("/connection",authuser, async(req , res)=>{
+    const loggedUser = req.user;
+
+
+    const AllConnection = await ConnectionModel.find(
+        {$or:[{ fromUserId: loggedUser?._id}, {toUserId:loggedUser?._id}]
+    }).populate("fromUserId",SAFE_DATA).populate("toUserId", SAFE_DATA);
+
+res.send(AllConnection)
+})
 
 
 
-    </div>
-  )
-}
+module.exports = connectionRouter;

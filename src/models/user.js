@@ -8,7 +8,8 @@ firstName: {
     trim:true,
 },
 lastName: {
-    type:String
+    type:String,
+    default: ""
 },
 email:{
     type: String,
@@ -27,21 +28,18 @@ password:{
 },
 age:{
     type:Number,
+    default:null,
     min:18,
     max:50
 },
 gender:{
     type:String,
+    default:"",
     enum: { values :["male","female","others"]}
-    // validate(value){
-    //     if(!["male","female","others"].includes(value)){
-    //         console.log("done");
-    //     throw new Error("gender data is not valid!");
-    //     }
-    // }
 },
 about:{
 type:String,
+default:""
 },
 skills:{
     type:[String]
