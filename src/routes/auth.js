@@ -5,21 +5,23 @@ const authRouter = express.Router();
 const User = require("../models/user");
 const jwt = require("jsonwebtoken");
 
-authRouter.post("/sinup", async (req, res) => {
+authRouter.post("/singup", async (req, res) => {
   try {
-    validateSinupUpDate(req);
+    console.log(req.body);
+    validateSinupUpDate(req,res);
     const { firstName, lastName, email, password } = req.body;
-    const passwordhash = await bcrypt.hash(password, 10);
+    const passwordHash = await bcrypt.hash(password, 10);
     const user = new User({
       firstName,
       lastName,
       email,
-      password: passwordhash,
+      password: passwordHash,
     });
     await user.save();
-    res.send("user data is successfully uploaded!");
+    res.json({success:true, message:"sing up successfull!"});
   } catch (err) {
-    res.status(400).send(err.message);
+    console.log("err:",err);
+    res.status(400).json({success:false, Error: err});
   }
 });
 

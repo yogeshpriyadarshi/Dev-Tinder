@@ -7,29 +7,24 @@ const ConnectionModel = require("../models/connection");
 const requestRouter = express.Router();
 
 requestRouter.post(
-  "/request/sent/:status/:requestId",
+  "/request/sent/:status/:toRequestId",
   authuser,
   async (req, res) => {
     try {
-      const { status, requestId } = req.params;
-      const toUserId = requestId;
+      const { status, toRequestId } = req.params;
       const fromUserId = req.user._id;
-
+      const toUserId = toRequestId;
       const AllowedStatus = ["interested", "ignored"];
-
       if (!AllowedStatus.includes(status)) {
         throw new Error("Status is not defined!");
       }
+      console.log("userid is ", toRequestId);
 
-      console.log("userid is ", requestId);
-
-      const user = await User.findById(requestId);
+      const user = await User.findById(toUserId);
       if (!user) {
         throw new Error("request Id is not present!");
       }
-
       // check connectin is already exist!
-
       const connectionExist = await ConnectionModel.findOne({
         $or: [
           { fromUserId, toUserId },
@@ -39,7 +34,6 @@ requestRouter.post(
       if (connectionExist) {
         throw new Error("connetion already exist");
       }
-
       const connection = new ConnectionModel({
         fromUserId,
         toUserId,
