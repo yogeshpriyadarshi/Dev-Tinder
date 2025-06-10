@@ -36,8 +36,6 @@ profileRouter.get("/feed",authuser, async (req, res) => {
     $or: [{fromUserId:loggedUser._id}, {toUserId: loggedUser._id}]
   }).select("fromUserId toUserId");
 
-console.log("connectedUser:", connectedToLoggedUser);
-
 const uniqueNotFetchId = new Set();
 connectedToLoggedUser.forEach((data)=> {  
   uniqueNotFetchId.add(data.fromUserId.toString());
@@ -45,8 +43,11 @@ connectedToLoggedUser.forEach((data)=> {
 })
 
 console.log(uniqueNotFetchId);
-   const user = await User.find({  
-_id: {$nin: Array.from(uniqueNotFetchId)}
+   const user = await User.find({
+    $and:[
+{_id: {$nin: Array.from(uniqueNotFetchId) } },
+{_id: {$ne: loggedUser._id} }
+    ] 
    });
    res.send(user);
 

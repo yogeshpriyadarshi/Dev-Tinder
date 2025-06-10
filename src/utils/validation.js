@@ -18,7 +18,6 @@ const validateSinupUpDate = (req, res) => {
     return res
       .status(400)
       .json({ success: false, message: "Not Strong Password" });
-    throw new Error("password is not strong!");
   }
 };
 

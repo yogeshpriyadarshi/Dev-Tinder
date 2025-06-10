@@ -53,6 +53,43 @@ requestRouter.post(
   }
 );
 
+requestRouter.patch("/request/cancel/:requestId",authuser, async(req, res)=>{
+try{
+const loggedUser = req.user;
+const {requestId} = req.params;
+const fromUserId = loggedUser?._id;
+const toUserId = requestId;
+
+  const connectionExist = await ConnectionModel.findOne({
+        $or: [
+          {
+            fromUserId,
+            toUserId,
+            status: "interested",
+          },
+          {
+            fromUserId: toUserId,
+            toUserId: fromUserId,
+            status: "interested",
+          },
+        ],
+      });
+
+  const updateRequest = await ConnectionModel.findByIdAndUpdate(
+        connectionExist?._id,
+        {status:"cancel"},
+        { returnDocument: "after", runValidators: true }
+      );
+      console.log(updateRequest);
+      if(updateRequest){
+      res.json({ success: true });
+      }
+}catch(err){
+console.error(err);
+}
+
+})
+
 requestRouter.patch(
   "/request/review/:status/:requestId",
   authuser,
@@ -66,8 +103,6 @@ requestRouter.patch(
       if (!AllowedStatus.includes(status)) {
         throw new Error("Status is not defined!");
       }
-      console.log("first,", status);
-
       const connectionExist = await ConnectionModel.findOne({
         $or: [
           {
@@ -82,8 +117,7 @@ requestRouter.patch(
           },
         ],
       });
-      console.log(req.body);
-      console.log("first", connectionExist?._id);
+    
       const updateRequest = await ConnectionModel.findByIdAndUpdate(
         connectionExist?._id,
         req.body,
@@ -95,6 +129,18 @@ requestRouter.patch(
     }
   }
 );
+requestRouter.get("/request/sent/", authuser, async (req, res) => {
+  try {
+    const loggedInUser = req.user;
+    const requestUser = await ConnectionModel.find({
+     fromUserId : loggedInUser._id,
+      status: "interested",
+    }).populate("toUserId", SAFE_DATA);
+    res.send(requestUser);
+  } catch (err) {
+    res.status(400).send("ERROR:" + err.message);
+  }
+});
 
 requestRouter.get("/request/view/", authuser, async (req, res) => {
   try {

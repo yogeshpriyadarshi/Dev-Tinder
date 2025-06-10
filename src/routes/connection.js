@@ -15,10 +15,8 @@ const connectionRouter = express.Router();
 
 connectionRouter.get("/connection",authuser, async(req , res)=>{
     const loggedUser = req.user;
-
-
     const AllConnection = await ConnectionModel.find(
-        {$or:[{ fromUserId: loggedUser?._id}, {toUserId:loggedUser?._id}]
+        {$or:[{ fromUserId: loggedUser?._id,status:"accepted"}, {toUserId:loggedUser?._id,status:"accepted"}]
     }).populate("fromUserId",SAFE_DATA).populate("toUserId", SAFE_DATA);
 
 res.send(AllConnection)

@@ -35,7 +35,7 @@ age:{
 gender:{
     type:String,
     default:"",
-    enum: { values :["male","female","others"]}
+    enum: { values :["male","female","others",""]}
 },
 about:{
 type:String,
