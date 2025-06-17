@@ -53,40 +53,44 @@ requestRouter.post(
   }
 );
 
-requestRouter.patch("/request/cancel/:requestId",authuser, async(req, res)=>{
-try{
-const loggedUser = req.user;
-const {requestId} = req.params;
-const fromUserId = loggedUser?._id;
-const toUserId = requestId;
+requestRouter.patch(
+  "/request/cancel/:requestId",
+  authuser,
+  async (req, res) => {
+    try {
+      const loggedUser = req.user;
+      const { requestId } = req.params;
+      const fromUserId = loggedUser?._id;
+      const toUserId = requestId;
 
-  const connectionExist = await ConnectionModel.findOne({
+      const connectionExist = await ConnectionModel.findOne({
         $or: [
           {
             fromUserId,
             toUserId,
-            status: "interested",
+            status: { $in: ["interested", "accepted"] },
           },
           {
             fromUserId: toUserId,
             toUserId: fromUserId,
-            status: "interested",
+            status: { $in: ["interested", "accepted"] },
           },
         ],
       });
 
-  const updateRequest = await ConnectionModel.findByIdAndUpdate(
+      const updateRequest = await ConnectionModel.findByIdAndUpdate(
         connectionExist?._id,
-        {status:"cancel"},
+        { status: "cancel" },
         { returnDocument: "after", runValidators: true }
       );
-      if(updateRequest){
-      res.json({ success: true });
+      if (updateRequest) {
+        res.json({ success: true });
       }
-}catch(err){
-console.error(err);
-}
-})
+    } catch (err) {
+      console.error(err);
+    }
+  }
+);
 
 requestRouter.patch(
   "/request/review/:status/:requestId",
@@ -115,14 +119,14 @@ requestRouter.patch(
           },
         ],
       });
-    
+
       const updateRequest = await ConnectionModel.findByIdAndUpdate(
         connectionExist?._id,
         req.body,
         { returnDocument: "after", runValidators: true }
       );
-      if(updateRequest){
-      res.json({ success: true });
+      if (updateRequest) {
+        res.json({ success: true });
       }
     } catch (err) {
       res.send("ERROR:" + err.message);
@@ -133,7 +137,7 @@ requestRouter.get("/request/sent/", authuser, async (req, res) => {
   try {
     const loggedInUser = req.user;
     const requestUser = await ConnectionModel.find({
-     fromUserId : loggedInUser._id,
+      fromUserId: loggedInUser._id,
       status: "interested",
     }).populate("toUserId", SAFE_DATA);
     res.send(requestUser);

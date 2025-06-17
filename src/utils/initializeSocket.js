@@ -1,6 +1,4 @@
 
-
-
 const {Server} = require("socket.io")
 
 
@@ -10,8 +8,6 @@ const io = new Server(server, {cors :
 );
 
 io.on("connection", (socket)=>{
-
-    // handle error;
 
 socket.on("join", ({firstName,userId,targetId})=>{ 
 const room = [userId, targetId].sort().join("_");

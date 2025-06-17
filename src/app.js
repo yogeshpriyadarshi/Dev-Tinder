@@ -1,3 +1,4 @@
+require("dotenv").config();
 const express = require("express");
 const {createServer} = require("node:http");
 const { connectDB } = require("./config/database");
@@ -8,7 +9,6 @@ const BASE_URL = require("./utils/constant");
 const app = express();
 
 const server = createServer(app);
-
 
 app.use(cors({ origin: BASE_URL, credentials: true }));
 app.use(express.json());

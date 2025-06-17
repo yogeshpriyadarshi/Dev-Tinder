@@ -1,26 +1,37 @@
 const express = require("express");
-const {authuser} = require("../middleware/auth");
-const User = require ("../models/user");
+const { authuser } = require("../middleware/auth");
+const User = require("../models/user");
 const ConnectionModel = require("../models/connection");
 
 const profileRouter = express.Router();
 
 profileRouter.get("/profile/view", authuser, async (req, res) => {
- const profile = req.user;
+  const profile = req.user;
   res.send(profile);
 });
 
-profileRouter.patch("/profile/edit/:id",authuser ,async (req, res) => {
+profileRouter.patch("/profile/edit/:id", authuser, async (req, res) => {
   try {
-    const ALLOWED_UPDATE = ["firstName","lastName","skill", "age", "photoUrl", "gender","about"];
+    const ALLOWED_UPDATE = [
+      "firstName",
+      "lastName",
+      "skill",
+      "age",
+      "photoUrl",
+      "gender",
+      "about",
+    ];
 
-    const isUpdateAllowed = Object.keys(req.body).every(field => ALLOWED_UPDATE.includes(field) );
+    const isUpdateAllowed = Object.keys(req.body).every((field) =>
+      ALLOWED_UPDATE.includes(field)
+    );
     if (!isUpdateAllowed) {
       throw new Error("Update request is not valid!!");
     }
-    const {id} = req.params;
+    const { id } = req.params;
     const upDate = await User.findByIdAndUpdate(id, req.body, {
-      returnDocument: "after", runValidators: true,
+      returnDocument: "after",
+      runValidators: true,
     });
     res.send(upDate);
   } catch (err) {
@@ -28,29 +39,34 @@ profileRouter.patch("/profile/edit/:id",authuser ,async (req, res) => {
   }
 });
 
-profileRouter.get("/feed",authuser, async (req, res) => {
+profileRouter.get("/feed", authuser, async (req, res) => {
   const loggedUser = req.user;
- const connectedToLoggedUser = await ConnectionModel.find({
-    $or: [{fromUserId:loggedUser._id, status: {$in:["ignored", "interested", "accepted"]} }, 
-      {toUserId: loggedUser._id, status:{$in:["ignored", "interested", "accepted"]}}]
+  const connectedToLoggedUser = await ConnectionModel.find({
+    $or: [
+      {
+        fromUserId: loggedUser._id,
+        status: { $in: ["ignored", "interested", "accepted"] },
+      },
+      {
+        toUserId: loggedUser._id,
+        status: { $in: ["ignored", "interested", "accepted"] },
+      },
+    ],
   }).select("fromUserId toUserId");
 
-const uniqueNotFetchId = new Set();
-connectedToLoggedUser.forEach((data)=> {  
-  uniqueNotFetchId.add(data.fromUserId.toString());
-  uniqueNotFetchId.add(data.toUserId.toString());
-})
+  const uniqueNotFetchId = new Set();
+  connectedToLoggedUser.forEach((data) => {
+    uniqueNotFetchId.add(data.fromUserId.toString());
+    uniqueNotFetchId.add(data.toUserId.toString());
+  });
 
-   const user = await User.find({
-    $and:[
-{_id: {$nin: Array.from(uniqueNotFetchId) } },
-{_id: {$ne: loggedUser._id} }
-    ] 
-   });
-   res.send(user);
-
+  const user = await User.find({
+    $and: [
+      { _id: { $nin: Array.from(uniqueNotFetchId) } },
+      { _id: { $ne: loggedUser._id } },
+    ],
+  });
+  res.send(user);
 });
-
-
 
 module.exports = profileRouter;
