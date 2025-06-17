@@ -13,7 +13,7 @@ const connectionSchema = new mongoose.Schema({
     },
     status:{
         type:String,
-        enum: {values: ["ignored","interested","rejected","accepted","cancel"]}
+        enum: {values: ["ignored","interested","rejected","accepted","cancel","declined"]}
     },
 },
 {

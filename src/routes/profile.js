@@ -19,8 +19,6 @@ profileRouter.patch("/profile/edit/:id",authuser ,async (req, res) => {
       throw new Error("Update request is not valid!!");
     }
     const {id} = req.params;
-    console.log(req.params);
-    console.log(id);
     const upDate = await User.findByIdAndUpdate(id, req.body, {
       returnDocument: "after", runValidators: true,
     });
@@ -33,7 +31,8 @@ profileRouter.patch("/profile/edit/:id",authuser ,async (req, res) => {
 profileRouter.get("/feed",authuser, async (req, res) => {
   const loggedUser = req.user;
  const connectedToLoggedUser = await ConnectionModel.find({
-    $or: [{fromUserId:loggedUser._id}, {toUserId: loggedUser._id}]
+    $or: [{fromUserId:loggedUser._id, status: {$in:["ignored", "interested", "accepted"]} }, 
+      {toUserId: loggedUser._id, status:{$in:["ignored", "interested", "accepted"]}}]
   }).select("fromUserId toUserId");
 
 const uniqueNotFetchId = new Set();
@@ -42,7 +41,6 @@ connectedToLoggedUser.forEach((data)=> {
   uniqueNotFetchId.add(data.toUserId.toString());
 })
 
-console.log(uniqueNotFetchId);
    const user = await User.find({
     $and:[
 {_id: {$nin: Array.from(uniqueNotFetchId) } },

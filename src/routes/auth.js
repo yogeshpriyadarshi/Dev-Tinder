@@ -7,7 +7,6 @@ const jwt = require("jsonwebtoken");
 
 authRouter.post("/singup", async (req, res) => {
   try {
-    console.log(req.body);
     validateSinupUpDate(req,res);
     const { firstName, lastName, email, password } = req.body;
     const passwordHash = await bcrypt.hash(password, 10);

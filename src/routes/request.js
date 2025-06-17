@@ -80,14 +80,12 @@ const toUserId = requestId;
         {status:"cancel"},
         { returnDocument: "after", runValidators: true }
       );
-      console.log(updateRequest);
       if(updateRequest){
       res.json({ success: true });
       }
 }catch(err){
 console.error(err);
 }
-
 })
 
 requestRouter.patch(
@@ -123,7 +121,9 @@ requestRouter.patch(
         req.body,
         { returnDocument: "after", runValidators: true }
       );
+      if(updateRequest){
       res.json({ success: true });
+      }
     } catch (err) {
       res.send("ERROR:" + err.message);
     }
