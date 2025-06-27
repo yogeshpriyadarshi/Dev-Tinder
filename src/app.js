@@ -19,11 +19,13 @@ const profileRouter = require("./routes/profile");
 const requestRouter = require("./routes/request");
 const connectionRouter = require("./routes/connection");
 const {  initializeSocket } = require("./utils/initializeSocket");
+const chatRouter = require("./routes/chat");
 
 app.use("/", authRouter);
 app.use("/", profileRouter);
 app.use("/", requestRouter);
 app.use("/", connectionRouter);
+app.use("/",chatRouter);
 
 initializeSocket(server)
 
