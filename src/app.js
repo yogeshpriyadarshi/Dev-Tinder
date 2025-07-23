@@ -5,6 +5,7 @@ const { connectDB } = require("./config/database");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
 const BASE_URL = require("./utils/constant");
+const PORT = process.env.PORT;
 
 const app = express();
 
@@ -21,6 +22,14 @@ const connectionRouter = require("./routes/connection");
 const {  initializeSocket } = require("./utils/initializeSocket");
 const chatRouter = require("./routes/chat");
 
+app.use((req,res,next)=>{
+  console.log("api is hit on server!!!/n req",req,{
+    time: new Date().toISOString(),
+    method: req.method
+  });
+next();
+});
+
 app.use("/", authRouter);
 app.use("/", profileRouter);
 app.use("/", requestRouter);
@@ -31,9 +40,9 @@ initializeSocket(server)
 
 connectDB()
   .then(() => {
-    console.log("connection is done!");
-    server.listen(2000, () => {
-      console.log("server is running at 2000");
+    console.log("DB connection is done!");
+    server.listen(PORT, () => {
+      console.log(`Server is running on ${PORT}`);
     });
   })
   .catch((err) => {

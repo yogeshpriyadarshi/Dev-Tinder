@@ -1,13 +1,14 @@
 const express = require("express");
-const { validateSinupUpDate} = require("../utils/validation");
+const { validateSinupUpDate } = require("../utils/validation");
 const bcrypt = require("bcrypt");
 const authRouter = express.Router();
 const User = require("../models/user");
 const jwt = require("jsonwebtoken");
+const google = require("./google");
 
 authRouter.post("/singup", async (req, res) => {
   try {
-    validateSinupUpDate(req,res);
+    validateSinupUpDate(req, res);
     const { firstName, lastName, email, password } = req.body;
     const passwordHash = await bcrypt.hash(password, 10);
     const user = new User({
@@ -17,10 +18,10 @@ authRouter.post("/singup", async (req, res) => {
       password: passwordHash,
     });
     await user.save();
-    res.json({success:true, message:"sing up successfull!"});
+    res.json({ success: true, message: "sing up successfull!" });
   } catch (err) {
-    console.log("err:",err);
-    res.status(400).json({success:false, Error: err});
+    console.log("err:", err);
+    res.status(400).json({ success: false, Error: err });
   }
 });
 
@@ -36,20 +37,26 @@ authRouter.post("/login", async (req, res) => {
     if (isCorrectPassword) {
       //             genrerate the token here!
       const token = await jwt.sign({ _id: user.id }, "something");
-      res.cookie("token", token);
+      res.cookie("DevToken", token);
       res.send(user);
     } else {
       throw new Error(" not valid credential!");
     }
   } catch (err) {
-    res.status(400).send("Error: "+err.message);
+    res.status(400).send("Error: " + err.message);
   }
 });
 
-authRouter.post("/logout",async(req,res)=>{
-res.cookie("token",null, {expires: new Date( Date.now())} );
-res.send("logout successfully!");
-})
+authRouter.post("/google",google ,async(req, res)=>{
+  console.log("code is here let us check it...");
 
+
+
+});
+
+authRouter.post("/logout", async (req, res) => {
+  res.cookie("DevToken", null, { expires: new Date(Date.now()) });
+  res.send("logout successfully!");
+});
 
 module.exports = authRouter;

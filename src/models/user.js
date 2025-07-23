@@ -37,6 +37,14 @@ gender:{
     default:"",
     enum: { values :["male","female","others",""]}
 },
+oauthProvider: {
+    type:String,
+    default:"email"
+},
+ oauthProviderId: {
+    type:String,
+    default:"none"
+ }, 
 about:{
 type:String,
 default:""

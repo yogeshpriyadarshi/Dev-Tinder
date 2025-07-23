@@ -5,11 +5,11 @@ const User = require("../models/user");
 const authuser = async(req, res,next)=>{
     try{
 const cookie = req.cookies;
-const {token} = cookie;
-if(!token){
+const {DevToken} = cookie;
+if(!DevToken){
     return res.status(401).send("please Login!");
 }
-decodedObj = await jwt.verify(token,"something");
+decodedObj = await jwt.verify(DevToken,"something");
 const {_id} = decodedObj;
 const user = await User.findById(_id);
 req.user=user;
