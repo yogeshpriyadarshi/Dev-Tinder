@@ -11,7 +11,7 @@ const app = express();
 
 const server = createServer(app);
 
-app.use(cors({ origin: BASE_URL, credentials: true }));
+app.use(cors({ origin: "*", credentials: true }));
 app.use(express.json());
 app.use(cookieParser());
 
