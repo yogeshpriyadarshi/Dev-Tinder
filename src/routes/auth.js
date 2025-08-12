@@ -40,7 +40,7 @@ authRouter.post("/login", async (req, res) => {
 res.cookie("DevToken", token, {
   httpOnly: true,      // prevents JS from reading the cookie
   secure: false,       // keep false until you enable HTTPS
-  sameSite: "None"     // allow cross-site cookie sending
+  sameSite: "lax"     // allow cross-site cookie sending
 });
       res.send(user);
     } else {

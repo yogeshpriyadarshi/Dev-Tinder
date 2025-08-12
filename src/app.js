@@ -11,7 +11,27 @@ const app = express();
 
 const server = createServer(app);
 
-app.use(cors({  origin: 'http://localhost:1000', credentials: true }));
+const allowedOrigins = [
+  "http://localhost:1000",
+  "http://34.47.202.171",
+];
+
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      // allow requests with no origin (like mobile apps or curl)
+      if (!origin) return callback(null, true);
+
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      } else {
+        return callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true
+  })
+);
+
 app.use(express.json());
 app.use(cookieParser());
 
