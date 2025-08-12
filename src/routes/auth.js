@@ -37,7 +37,11 @@ authRouter.post("/login", async (req, res) => {
     if (isCorrectPassword) {
       //             genrerate the token here!
       const token = await jwt.sign({ _id: user.id }, "something");
-      res.cookie("DevToken", token);
+res.cookie("DevToken", token, {
+  httpOnly: true,      // prevents JS from reading the cookie
+  secure: false,       // keep false until you enable HTTPS
+  sameSite: "None"     // allow cross-site cookie sending
+});
       res.send(user);
     } else {
       throw new Error(" not valid credential!");
