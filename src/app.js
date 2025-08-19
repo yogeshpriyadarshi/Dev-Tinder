@@ -13,7 +13,7 @@ const server = createServer(app);
 
 const allowedOrigins = [
   "http://localhost:1000",
-  "http://34.47.202.171",
+  "http://34.100.168.31",
 ];
 
 app.use(
