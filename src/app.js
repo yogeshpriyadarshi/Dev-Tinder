@@ -14,6 +14,9 @@ const server = createServer(app);
 const allowedOrigins = [
   "http://localhost:1000",
   "http://34.100.168.31",
+    "https://34.100.168.31",
+  "http://devtinderpro.shop",
+"https://devtinderpro.shop"
 ];
 
 app.use(
