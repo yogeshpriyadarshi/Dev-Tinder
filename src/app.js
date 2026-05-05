@@ -1,22 +1,18 @@
 require("dotenv").config();
 const express = require("express");
-const {createServer} = require("node:http");
+const { createServer } = require("node:http");
 const { connectDB } = require("./config/database");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
 const BASE_URL = require("./utils/constant");
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 4000;
 
 const app = express();
 
 const server = createServer(app);
 
 const allowedOrigins = [
-  "http://localhost:1000",
-  "http://34.100.168.31",
-    "https://34.100.168.31",
-  "http://devtinderpro.shop",
-"https://devtinderpro.shop"
+  "http://localhost:3000"
 ];
 
 app.use(
@@ -42,22 +38,24 @@ const authRouter = require("./routes/auth");
 const profileRouter = require("./routes/profile");
 const requestRouter = require("./routes/request");
 const connectionRouter = require("./routes/connection");
-const {  initializeSocket } = require("./utils/initializeSocket");
+const { initializeSocket } = require("./utils/initializeSocket");
 const chatRouter = require("./routes/chat");
 
-app.use((req,res,next)=>{
-  console.log("api is hit on server!!!/n req",req,{
+app.use((req, res, next) => {
+  console.log("api is hit on server!!!/n req", {
     time: new Date().toISOString(),
     method: req.method
   });
-next();
+  next();
 });
 
+
+app.use("/api", require("./routes/api"));
 app.use("/", authRouter);
 app.use("/", profileRouter);
 app.use("/", requestRouter);
 app.use("/", connectionRouter);
-app.use("/",chatRouter);
+app.use("/", chatRouter);
 
 initializeSocket(server)
 

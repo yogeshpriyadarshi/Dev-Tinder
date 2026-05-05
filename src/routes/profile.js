@@ -2,22 +2,44 @@ const express = require("express");
 const { authuser } = require("../middleware/auth");
 const User = require("../models/user");
 const ConnectionModel = require("../models/connection");
+const { upload } = require("../utils/upload");
+const { default: cloudinary } = require("../config/cloudinary");
 
 const profileRouter = express.Router();
 
-profileRouter.get("/profile/view", authuser, async (req, res) => {
+profileRouter.get("/view", authuser, async (req, res) => {
   const profile = req.user;
   res.send(profile);
 });
 
-profileRouter.patch("/profile/edit/:id", authuser, async (req, res) => {
+profileRouter.post("/upload/image", authuser, upload.single("image"), async (req, res) => {
   try {
+    console.log("file is here", req.user);
+    const id  = req.user._id;
+       const result = await cloudinary.uploader.upload(req.file.path, {
+      folder: "devtinder/profile",
+    });
+     const photoUrl = result.secure_url;
+     console.log("photo url is here", photoUrl);  
+    const updatedUser = await User.findByIdAndUpdate(
+      id,
+      { photoUrl },
+      { returnDocument: "after", runValidators: true }
+    );
+    res.send(updatedUser);
+  } catch (err) {
+    res.status(400).send("ERROR:" + err.message);
+  }
+});
+
+profileRouter.patch("/update", authuser, async (req, res) => {
+  try {
+    const id = req.user._id;
     const ALLOWED_UPDATE = [
       "firstName",
       "lastName",
       "skill",
       "age",
-      "photoUrl",
       "gender",
       "about",
     ];
@@ -28,7 +50,6 @@ profileRouter.patch("/profile/edit/:id", authuser, async (req, res) => {
     if (!isUpdateAllowed) {
       throw new Error("Update request is not valid!!");
     }
-    const { id } = req.params;
     const upDate = await User.findByIdAndUpdate(id, req.body, {
       returnDocument: "after",
       runValidators: true,

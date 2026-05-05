@@ -1,33 +1,18 @@
 const express = require("express");
-const { validateSinupUpDate } = require("../utils/validation");
 const bcrypt = require("bcrypt");
 const authRouter = express.Router();
 const User = require("../models/user");
 const jwt = require("jsonwebtoken");
 const google = require("./google");
+const authController = require("../controllers/auth.controller");
+const { validateSinupUp } = require("../middleware/auth");
 
-authRouter.post("/singup", async (req, res) => {
-  try {
-    validateSinupUpDate(req, res);
-    const { firstName, lastName, email, password } = req.body;
-    const passwordHash = await bcrypt.hash(password, 10);
-    const user = new User({
-      firstName,
-      lastName,
-      email,
-      password: passwordHash,
-    });
-    await user.save();
-    res.json({ success: true, message: "sing up successfull!" });
-  } catch (err) {
-    console.log("err:", err);
-    res.status(400).json({ success: false, Error: err });
-  }
-});
+authRouter.post("/signup",validateSinupUp, authController.signup);
 
 authRouter.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
+    console.log("email and password is here", email, password);
     const user = await User.findOne({ email: email });
     if (user === 0) {
       throw new Error(" not valid crediential!");
