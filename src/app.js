@@ -12,7 +12,8 @@ const app = express();
 const server = createServer(app);
 
 const allowedOrigins = [
-  "http://localhost:3000"
+  "http://localhost:3000",
+  "https://devtinderfrontend-v6r7.onrender.com"
 ];
 
 app.use(
