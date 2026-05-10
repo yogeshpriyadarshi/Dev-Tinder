@@ -12,13 +12,27 @@ profileRouter.get("/view", authuser, async (req, res) => {
   res.send(profile);
 });
 
+
 profileRouter.post("/upload/image", authuser, upload.single("image"), async (req, res) => {
   try {
     console.log("file is here", req.user);
     const id  = req.user._id;
-       const result = await cloudinary.uploader.upload(req.file.path, {
-      folder: "devtinder/profile",
-    });
+     const uploadToCloudinary = (buffer) => {
+      return new Promise((resolve, reject) => {
+        const stream = cloudinary.uploader.upload_stream(
+          { folder: "my-app" },
+          (error, result) => {
+            if (error) return reject(error);
+            resolve(result);
+          }
+        );
+
+        stream.end(buffer);
+      });
+    };
+
+    const result = await uploadToCloudinary(req.file.buffer);
+    
      const photoUrl = result.secure_url;
      console.log("photo url is here", photoUrl);  
     const updatedUser = await User.findByIdAndUpdate(
