@@ -13,7 +13,7 @@ const connectionRouter = express.Router();
   "photoUrl",
 ];
 
-connectionRouter.get("/connection",authuser, async(req , res)=>{
+connectionRouter.get("",authuser, async(req , res)=>{
     const loggedUser = req.user;
     const AllConnection = await ConnectionModel.find(
         {$or:[{ fromUserId: loggedUser?._id,status:"accepted"}, {toUserId:loggedUser?._id,status:"accepted"}]

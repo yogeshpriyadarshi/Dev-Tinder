@@ -25,7 +25,7 @@ authRouter.post("/login", async (req, res) => {
 res.cookie("DevToken", token, {
   httpOnly: true,      // prevents JS from reading the cookie
   secure: process.env.NODE_ENV === "production",       // keep false until you enable HTTPS
-  sameSite: "none"     // allow cross-site cookie sending
+  sameSite: process.env.NODE_ENV === "production" ? "none" : "lax"     // allow cross-site cookie sending
 });
       res.send(user);
     } else {

@@ -15,7 +15,7 @@ const SAFE_DATA = [
 ];
 
 requestRouter.post(
-  "/request/sent/:status/:toRequestId",
+  "/sent/:status/:toRequestId",
   authuser,
   async (req, res) => {
     try {
@@ -53,8 +53,9 @@ requestRouter.post(
   }
 );
 
+
 requestRouter.patch(
-  "/request/cancel/:requestId",
+  "/cancel/:requestId",
   authuser,
   async (req, res) => {
     try {
@@ -93,7 +94,7 @@ requestRouter.patch(
 );
 
 requestRouter.patch(
-  "/request/review/:status/:requestId",
+  "/review/:status/:requestId",
   authuser,
   async (req, res) => {
     try {
@@ -133,7 +134,7 @@ requestRouter.patch(
     }
   }
 );
-requestRouter.get("/request/sent/", authuser, async (req, res) => {
+requestRouter.get("/sent", authuser, async (req, res) => {
   try {
     const loggedInUser = req.user;
     const requestUser = await ConnectionModel.find({
@@ -146,7 +147,7 @@ requestRouter.get("/request/sent/", authuser, async (req, res) => {
   }
 });
 
-requestRouter.get("/request/view/", authuser, async (req, res) => {
+requestRouter.get("/view/", authuser, async (req, res) => {
   try {
     const loggedInUser = req.user;
     const requestUser = await ConnectionModel.find({
@@ -158,5 +159,7 @@ requestRouter.get("/request/view/", authuser, async (req, res) => {
     res.status(400).send("ERROR:" + err.message);
   }
 });
+
+
 
 module.exports = requestRouter;
