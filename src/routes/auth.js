@@ -24,7 +24,7 @@ authRouter.post("/login", async (req, res) => {
       const token = await jwt.sign({ _id: user.id }, "something");
 res.cookie("DevToken", token, {
   httpOnly: true,      // prevents JS from reading the cookie
-  secure: false,       // keep false until you enable HTTPS
+  secure: process.env.NODE_ENV === "production",       // keep false until you enable HTTPS
   sameSite: "lax"     // allow cross-site cookie sending
 });
       res.send(user);
